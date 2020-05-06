@@ -8,6 +8,7 @@ CREATE TABLE `process_operation` (
   `operation_type` int(11) DEFAULT NULL,
   `operation_status` int(11) DEFAULT NULL,
   `error_message` text,
+  `more_message` text,
   PRIMARY KEY (`id`),
   KEY `process_id` (`process_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
