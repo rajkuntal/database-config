@@ -1,4 +1,4 @@
-CREATE TABLE `mwtb_page_meta` (
+DROP TABLE `mwtb_page_meta` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `page_id` int(11) NOT NULL,
   `anchor_text` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,

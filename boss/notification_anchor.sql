@@ -6,6 +6,7 @@ CREATE TABLE `notification_anchor` (
   `anchor_id` varchar(100) DEFAULT NULL,
   `created_date` timestamp NULL DEFAULT NULL,
   `modified_date` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `more_ids` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `notification_id` (`notification_id`),
   KEY `anchor` (`anchor`),

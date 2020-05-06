@@ -7,6 +7,7 @@ CREATE TABLE `page` (
   `modified_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `meta_gen_request_date` timestamp NULL DEFAULT NULL,
   `meta_gen_date` timestamp NULL DEFAULT NULL,
+  `enable_mwtb` tinyint(2) NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `page_url` (`url`),
   KEY `page_att_name_idx` (`attribute_name`)

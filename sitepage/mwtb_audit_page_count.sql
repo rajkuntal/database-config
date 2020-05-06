@@ -1,4 +1,4 @@
-CREATE TABLE `mwtb_audit_page_count` (
+CREATE TABLE `mwtb_audit_page_count_rename` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `mwtb_audit_id` int(11) DEFAULT NULL,
   `vertical` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
