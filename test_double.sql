@@ -13,5 +13,6 @@ CREATE TABLE `test_double` (
   `item_image` varchar(255) DEFAULT NULL,
   `l2_category` varchar(100) DEFAULT NULL,
   `l3_category` varchar(100) DEFAULT NULL,
+  `l4_category` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
