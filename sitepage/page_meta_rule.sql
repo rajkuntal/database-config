@@ -1,0 +1,21 @@
+CREATE TABLE `page_meta_rule` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `url_pattern` varchar(500) NOT NULL,
+  `attribute_name` varchar(128) DEFAULT NULL,
+  `status_id` tinyint(2) unsigned NOT NULL,
+  `h1` varchar(1000) DEFAULT NULL,
+  `sub_header` varchar(1000) DEFAULT NULL,
+  `title` varchar(1000) DEFAULT NULL,
+  `description` varchar(1000) DEFAULT NULL,
+  `index` tinyint(1) DEFAULT NULL,
+  `link` tinyint(1) DEFAULT NULL,
+  `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by` varchar(32) DEFAULT NULL,
+  `modified_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `modified_by` varchar(32) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `url_pattern` (`url_pattern`),
+  KEY `status_id` (`status_id`),
+  KEY `page_meta_rule_att_name_idx` (`attribute_name`),
+  CONSTRAINT `page_meta_rule_stfk_1` FOREIGN KEY (`status_id`) REFERENCES `page_meta_rule_status` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

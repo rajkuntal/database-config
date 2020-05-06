@@ -1,0 +1,21 @@
+CREATE TABLE `monitor` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL DEFAULT '',
+  `check_impl` varchar(100) NOT NULL DEFAULT '' COMMENT 'spring bean for monitor checker clas',
+  `trigger_impl` varchar(100) DEFAULT NULL COMMENT 'spring bean name for trigger class',
+  `transformer_type` varchar(100) DEFAULT NULL,
+  `parameters` text COMMENT 'key value pairs for monitor configuration',
+  `sleep_mins` int(11) unsigned DEFAULT NULL COMMENT 'how ofter this check should run',
+  `description` varchar(1000) DEFAULT NULL,
+  `env` varchar(50) DEFAULT NULL,
+  `owner_email` varchar(200) DEFAULT NULL COMMENT 'owner of this alert, send bad configurtion alerts to this address',
+  `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified_date` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_by` varchar(100) DEFAULT NULL,
+  `modified_by` varchar(100) DEFAULT NULL,
+  `last_run_date` datetime DEFAULT NULL COMMENT 'last time this monitor was checked',
+  `last_triggered_date` datetime DEFAULT NULL COMMENT 'last time this monitor was triggered',
+  `expiration_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
