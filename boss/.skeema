@@ -19,3 +19,7 @@ host=localhost
 user=root
 password=root
 socket=/tmp/mysql.sock
+allow-unsafe
+skip-alter-wrapper
+skip-alter-algorithm
+skip-alter-lock
