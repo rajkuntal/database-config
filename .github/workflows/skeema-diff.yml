@@ -47,25 +47,8 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.base.sha }}
       # We checkout `master`. We will apply ("push") the `master` schema into local MySQL
-    - name: Find skeema file
-      run: |
-        mkdir -p /tmp/skeema-ci
-        skeema_path_hint_file=".github/skeema-diff.cfg"
-        if [ -f $skeema_path_hint_file ] ; then
-          skeema_path="$(egrep '^skeema_path' $skeema_path_hint_file | cut -d'=' -f2-)"
-        fi
-        skeema_file="$(find ${skeema_path:-.} skeema schemas schema db -name .skeema -maxdepth 1 2> /dev/null | head -1)"
-        if [ -n "$skeema_file" ] ; then
-          echo "$skeema_file" > /tmp/skeema-ci/skeema-file
-          dirname "$skeema_file" > /tmp/skeema-ci/skeema-dir
-
-          echo "skeema file is $skeema_file"
-        fi
     - name: Fetch skeema
       run: |
-        if [ ! -f /tmp/skeema-ci/skeema-file ] ; then
-          exit 0
-        fi
         (
           mkdir -p /tmp/skeema-ci
           cd /tmp/skeema-ci
