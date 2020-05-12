@@ -43,8 +43,6 @@ jobs:
     # - Otherwise add informative comments on this PR
     runs-on: ubuntu-latest
     steps:
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v2
     - uses: actions/checkout@v2
       with:
         ref: ${{ github.event.pull_request.base.sha }}
@@ -75,6 +73,8 @@ jobs:
           curl -s -L https://github.com/github/skeema/releases/download/v1.3.0-gh/skeema_1.3.0_linux_amd64.tar.gz > skeema.tar.gz
           tar xzf skeema.tar.gz skeema
         )
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v2
     - name: Fetch hub
       run: |
         (
