@@ -111,7 +111,7 @@ jobs:
         fi
         set -o pipefail
         cd $(cat /tmp/skeema-ci/skeema-dir)
-        /tmp/skeema-ci/skeema push skeema-diff-ci --allow-unsafe --ddl-wrapper='echo "\n-- skeema:ddl:begin\n"{DDL}";\n-- skeema:ddl:end"' | sed -e 's/^USE /-- skeema:ddl:use /g' | sed -n '/^-- skeema:ddl:use /p;/^-- skeema:ddl:begin/,/^-- skeema:ddl:end/p' | tee /tmp/skeema-ci/skeema-diff.sql
+        /tmp/skeema-ci/skeema diff skeema-diff-ci tee /tmp/skeema-ci/skeema-diff.sql
     - name: validate diff
       run: |
         count_schemas_changed="$(egrep -c '^-- skeema:ddl:use' /tmp/skeema-ci/skeema-diff.sql || :)"
