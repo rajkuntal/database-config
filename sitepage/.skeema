@@ -1,0 +1,15 @@
+default-character-set=utf8mb4
+default-collation=utf8mb4_unicode_ci
+schema=sitepage
+
+[local]
+flavor=mysql:5.7
+host=localhost
+password=root
+user=root
+
+
+[skeema-diff-ci]
+host=127.0.0.1
+port=3306
+user=root
