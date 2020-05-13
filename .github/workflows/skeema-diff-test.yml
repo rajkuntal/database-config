@@ -64,10 +64,8 @@ jobs:
           magic_comment_hint="-- skeema-diff-comment"
           magic_comment_id=$(/tmp/skeema-ci/hub api "/repos/rajkuntal/database-config/issues/${PR_NUMBER}/comments?per_page=100" | jq -r ".[] | select(.body | startswith(\"${magic_comment_hint}\")) | .id" | head -n 1)
           if [ -z "$magic_comment_id" ] ; then
-        # First time, add new comment
             /tmp/skeema-ci/hub api "/repos/rajkuntal/database-config/issues/${PR_NUMBER}/comments" --raw-field "body=$(cat /tmp/skeema-ci/skeema-diff.sql)"
           else
-        # Magic comment exists. Edit it.
             /tmp/skeema-ci/hub api --method PATCH "/repos/rajkuntal/database-config/issues/comments/${magic_comment_id}" --raw-field "body=$(cat /tmp/skeema-ci/skeema-diff.sql)"
           fi
     # Uncomment below two lines for debugging
