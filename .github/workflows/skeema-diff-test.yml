@@ -70,10 +70,10 @@ jobs:
         comment_body="$(printf -- "$magic_comment_hint\n ``` sql \n $skeema_diff ``` \n")"
         if [ -z "$magic_comment_id" ] ; then
           # First time, add new comment
-          /tmp/skeema-ci/hub api "/repos/rajkuntal/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --raw-field "body=$comment_body"
+          /tmp/skeema-ci/hub api "/repos/rajkuntal/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --raw-field "body=$(cat /tmp/skeema-ci/skeema-diff.sql)"
         else
           # Magic comment exists. Edit it.
-          /tmp/skeema-ci/hub api --method PATCH "/repos/rajkuntal/${GITHUB_REPOSITORY}/issues/comments/${magic_comment_id}" --raw-field "body=$comment_body"
+          /tmp/skeema-ci/hub api --method PATCH "/repos/rajkuntal/${GITHUB_REPOSITORY}/issues/comments/${magic_comment_id}" --raw-field "body=$(cat /tmp/skeema-ci/skeema-diff.sql)"
         fi
     # Uncomment below two lines for debugging
     #- name: Setup tmate session
