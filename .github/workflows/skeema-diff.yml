@@ -14,6 +14,13 @@ jobs:
     # - migration:skeefree:queued: skeefree has queued the migrations for execution. This is a point of no return. We're committed to the migration.
     # - migration:late:commits: new commits came in after the migration was queued. We won't consider further schema changes. Humans should look into why these commits came in at this stage.
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+        - 3306
     steps:
     - name: Fetch hub
       run: |
@@ -31,7 +38,7 @@ jobs:
       run: |
         for label_hint in "migration:skeema:diff 0000cc" "migration:skeefree:queued ffb800" "migration:skeefree:detected 9ab116" "migration:late:commits cc0000" "migration:for:review 8050e0" ; do
           read -r label color <<< "$label_hint"
-          /tmp/skeema-ci/hub api "repos/${GITHUB_REPOSITORY}/labels/${label}" > /dev/null 2>&1 || /tmp/skeema-ci/hub api "repos/${GITHUB_REPOSITORY}/labels" --raw-field "name=${label}" --raw-field "color=${color}"
+          /tmp/skeema-ci/hub api "/repos/rajkuntal/${GITHUB_REPOSITORY}/labels/${label}" > /dev/null 2>&1 || /tmp/skeema-ci/hub api "/repos/rajkuntal/${GITHUB_REPOSITORY}/labels" --raw-field "name=${label}" --raw-field "color=${color}"
         done
 
   skeema-diff:
@@ -101,8 +108,6 @@ jobs:
       # see discussion on https://github.com/skeema/skeema/pull/98
       # TL;DR the `push` does not actually make changes, just generates output.
       # skeefree later uses those special markers to reliably identify the DDL statements.
-      env:
-        MYSQL_PWD: root
       run: |
         if [ ! -f /tmp/skeema-ci/skeema-file ] ; then
           touch /tmp/skeema-ci/skeema-diff.sql
@@ -110,7 +115,6 @@ jobs:
         fi
         set -o pipefail
         cd $(cat /tmp/skeema-ci/skeema-dir)
-        sudo service mysql start
         /tmp/skeema-ci/skeema push skeema-diff-ci --allow-unsafe --ddl-wrapper='echo "\n-- skeema:ddl:begin\n"{DDL}";\n-- skeema:ddl:end"' | sed -e 's/^USE /-- skeema:ddl:use /g' | sed -n '/^-- skeema:ddl:use /p;/^-- skeema:ddl:begin/,/^-- skeema:ddl:end/p' | tee /tmp/skeema-ci/skeema-diff.sql
     - name: check label
       # See if `migration:skeema:diff` already exists. This helps with later bookkeeping.
@@ -119,7 +123,7 @@ jobs:
         GITHUB_USER: rajkuntal
         PR_NUMBER: ${{ github.event.pull_request.number }}
       run: |
-        /tmp/skeema-ci/hub api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels" | jq '.[].name' -r | grep -q "migration:skeema:diff" && touch /tmp/skeema-ci/skeema-diff-label-detected.hint || :
+        /tmp/skeema-ci/hub api "/repos/rajkuntal/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels" | jq '.[].name' -r | grep -q "migration:skeema:diff" && touch /tmp/skeema-ci/skeema-diff-label-detected.hint || :
     - name: validate migration:skeefree:queued status
       # Did this commit arrive after ` migration:skeefree:queued` label has been assigned? Not good -- we're already committed to this migration.
       # Otherwise, this new commit may contain new schema changes, or remvoe old ones; we remove the `migration:skeefree:detected` label and later may add it.
@@ -128,13 +132,13 @@ jobs:
         GITHUB_USER: rajkuntal
         PR_NUMBER: ${{ github.event.pull_request.number }}
       run: |
-        if ! /tmp/skeema-ci/hub api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels" | jq '.[].name' -r | grep -q "migration:skeefree:queued" ; then
+        if ! /tmp/skeema-ci/hub api "/repos/rajkuntal/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels" | jq '.[].name' -r | grep -q "migration:skeefree:queued" ; then
           # "migration:skeefree:queued" label not found. We're still able to make changes.
 
           # Aggressively remove 'migration:skeefree:detected' label. Reasoning is that a new commit came in.
           # Maybe that commit changed the schema, maybe not. We'll be on the safe side and cause `skeefree` to detect the change again.
 
-          /tmp/skeema-ci/hub api --method DELETE "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels/migration:skeefree:detected" || :
+          /tmp/skeema-ci/hub api --method DELETE "/repos/rajkuntal/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels/migration:skeefree:detected" || :
 
           exit 0
         fi
@@ -146,7 +150,7 @@ jobs:
           -H "Content-type: application/json" -H "Accept: application/json" -d '["migration:late:commits"]'
 
         message="This migration has already been queued, and should not see any further commits"
-        /tmp/skeema-ci/hub api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --raw-field "body=$message"
+        /tmp/skeema-ci/hub api "/repos/rajkuntal/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --raw-field "body=$message"
         echo "$message"
 
         exit 1
@@ -170,7 +174,7 @@ jobs:
         else
           if [ -f /tmp/skeema-ci/skeema-diff-label-detected.hint ] ; then
             # remove existing label
-            /tmp/skeema-ci/hub api --method DELETE "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels/migration:skeema:diff" || :
+            /tmp/skeema-ci/hub api --method DELETE "/repos/rajkuntal/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels/migration:skeema:diff" || :
             touch /tmp/skeema-ci/skeema-diff-label-removed.hint
           fi
         fi
@@ -193,7 +197,7 @@ jobs:
         fi
 
         magic_comment_hint="<!-- skeema:magic:comment -->"
-        magic_comment_id=$(/tmp/skeema-ci/hub api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments?per_page=100" | jq -r ".[] | select(.body | startswith(\"${magic_comment_hint}\")) | .id" | head -n 1)
+        magic_comment_id=$(/tmp/skeema-ci/hub api "/repos/rajkuntal/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments?per_page=100" | jq -r ".[] | select(.body | startswith(\"${magic_comment_hint}\")) | .id" | head -n 1)
 
         if [ -f /tmp/skeema-ci/skeema-diff-label-removed.hint ] ; then
           # There used to be a schema change, now there isn't
@@ -205,10 +209,10 @@ jobs:
 
         if [ -z "$magic_comment_id" ] ; then
           # First time, add new comment
-          /tmp/skeema-ci/hub api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --raw-field "body=$(cat /tmp/skeema-ci/skeema-diff.sql)"
+          /tmp/skeema-ci/hub api "/repos/rajkuntal/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --raw-field "body=$(cat /tmp/skeema-ci/skeema-diff.sql)"
         else
           # Magic comment exists. Edit it.
-          /tmp/skeema-ci/hub api --method PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${magic_comment_id}" --raw-field "body=$(cat /tmp/skeema-ci/skeema-diff.sql)"
+          /tmp/skeema-ci/hub api --method PATCH "/repos/rajkuntal/${GITHUB_REPOSITORY}/issues/comments/${magic_comment_id}" --raw-field "body=$(cat /tmp/skeema-ci/skeema-diff.sql)"
         fi
 
     - name: comment suggestion for review
@@ -224,10 +228,10 @@ jobs:
         fi
 
         magic_comment_hint="<!-- skeema:magic:review:comment -->"
-        magic_comment_id=$(/tmp/skeema-ci/hub api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments?per_page=100" | jq -r ".[] | select(.body | startswith(\"${magic_comment_hint}\")) | .id" | head -n 1)
+        magic_comment_id=$(/tmp/skeema-ci/hub api "/repos/rajkuntal/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments?per_page=100" | jq -r ".[] | select(.body | startswith(\"${magic_comment_hint}\")) | .id" | head -n 1)
 
         if [ -z "$magic_comment_id" ] ; then
-          author="$(/tmp/skeema-ci/hub api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" | jq -r '.user.login')"
+          author="$(/tmp/skeema-ci/hub api "/repos/rajkuntal/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" | jq -r '.user.login')"
           comment_body="$(printf -- "$magic_comment_hint\n@${author} it looks like you are making schema changes. When ready for production review & migration, please add the label \`migration:for:review\`.")"
-          /tmp/skeema-ci/hub api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --raw-field "body=${comment_body}"
+          /tmp/skeema-ci/hub api "/repos/rajkuntal/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --raw-field "body=${comment_body}"
         fi
