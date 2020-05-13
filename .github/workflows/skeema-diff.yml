@@ -89,6 +89,8 @@ jobs:
         fi
         cd $(cat /tmp/skeema-ci/skeema-dir)
         /tmp/skeema-ci/skeema push skeema-diff-ci
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v2
     - uses: actions/checkout@v2
       with:
         ref: ${{ github.event.pull_request.head.sha }}
@@ -205,10 +207,10 @@ jobs:
 
         if [ -z "$magic_comment_id" ] ; then
           # First time, add new comment
-          /tmp/skeema-ci/hub api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --raw-field "body=${comment_body}"
+          /tmp/skeema-ci/hub api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --raw-field "body=$(cat /tmp/skeema-ci/skeema-diff.sql)"
         else
           # Magic comment exists. Edit it.
-          /tmp/skeema-ci/hub api --method PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${magic_comment_id}" --raw-field "body=${comment_body}"
+          /tmp/skeema-ci/hub api --method PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${magic_comment_id}" --raw-field "body=$(cat /tmp/skeema-ci/skeema-diff.sql)"
         fi
 
     - name: comment suggestion for review
