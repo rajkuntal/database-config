@@ -62,9 +62,14 @@ jobs:
       run: |
           magic_comment_hint="-- skeema-diff-comment"
           magic_comment_id=$(/tmp/skeema-ci/hub api "/repos/rajkuntal/database-config/issues/${PR_NUMBER}/comments?per_page=100" | jq -r ".[] | select(.body | startswith(\"${magic_comment_hint}\")) | .id" | head -n 1)
-          printf '-- skeema-diff-comment \n\n ``` sql' | cat - /tmp/skeema-ci/skeema-diff.sql > temp && mv temp /tmp/skeema-ci/skeema-diff.sql
-          /tmp/skeema-ci/hub api "/repos/rajkuntal/database-config/issues/${PR_NUMBER}/comments" --raw-field "body=$(cat /tmp/skeema-ci/skeema-diff.sql)"
-          
+          sed -i 's/-- instance: 127.0.0.1:3306/-- skeema-diff-comment \
+          \
+          ```sql /g' /tmp/skeema-ci/skeema-diff.sql
+          if [ -z "$magic_comment_id" ] ; then
+            /tmp/skeema-ci/hub api "/repos/rajkuntal/database-config/issues/${PR_NUMBER}/comments" --raw-field "body=$(cat /tmp/skeema-ci/skeema-diff.sql)"
+          else
+            /tmp/skeema-ci/hub api --method PATCH "/repos/rajkuntal/database-config/issues/comments/${magic_comment_id}" --raw-field "body=$(cat /tmp/skeema-ci/skeema-diff.sql)"
+          fi
     # Uncomment below two lines for debugging
     #- name: Setup tmate session
     #  uses: mxschmitt/action-tmate@v2
