@@ -14,13 +14,6 @@ jobs:
     # - migration:skeefree:queued: skeefree has queued the migrations for execution. This is a point of no return. We're committed to the migration.
     # - migration:late:commits: new commits came in after the migration was queued. We won't consider further schema changes. Humans should look into why these commits came in at this stage.
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:5.7
-        env:
-          MYSQL_ROOT_PASSWORD: root
-        ports:
-        - 3306
     steps:
     - name: Fetch hub
       run: |
@@ -49,6 +42,13 @@ jobs:
     # - Add/remove labels so as to indicate status of this PR
     # - Otherwise add informative comments on this PR
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+        - 3306
     steps:
     - uses: actions/checkout@v2
       with:
