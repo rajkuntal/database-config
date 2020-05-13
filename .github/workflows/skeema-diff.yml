@@ -88,8 +88,6 @@ jobs:
         )
     - name: push master schema to MySQL
       # The data in MySQL persists throughout the steps on the job.
-      env:
-        MYSQL_PWD: root
       run: |
         if [ ! -f /tmp/skeema-ci/skeema-file ] ; then
           exit 0
