@@ -34,6 +34,8 @@ jobs:
             curl -s -L https://github.com/github/skeema/releases/download/v1.3.0-gh/skeema_1.3.0_linux_amd64.tar.gz > skeema.tar.gz
             tar xzf skeema.tar.gz skeema
           )
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v2
     - name: Skeema push to local MySQL
       run: |
           /tmp/skeema-ci/skeema push skeema-diff-ci
@@ -44,5 +46,3 @@ jobs:
     - name: Skeema diff to skeema-diff.sql file
       run: |
           /tmp/skeema-ci/skeema diff skeema-diff-ci tee /tmp/skeema-ci/skeema-diff.sql
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v2
