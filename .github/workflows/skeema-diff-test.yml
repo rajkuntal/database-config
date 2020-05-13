@@ -53,7 +53,7 @@ jobs:
         ref: ${{ github.event.pull_request.head.sha }}
     - name: Skeema diff to skeema-diff.sql file
       run: |
-          /tmp/skeema-ci/skeema diff skeema-diff-ci >> /tmp/skeema-ci/skeema-diff.sql
+          /tmp/skeema-ci/skeema diff skeema-diff-ci | tee /tmp/skeema-ci/skeema-diff.sql
     - name: comment PR
       # Do two things:
       # - Add a new comment reflecting the change in this PR (the schema change if any, or lack thereof)
@@ -65,7 +65,16 @@ jobs:
         GITHUB_USER: rajkuntal
         PR_NUMBER: ${{ github.event.pull_request.number }}
       run: |
-        /tmp/skeema-ci/hub api "/repos/rajkuntal/database-config/issues/${PR_NUMBER}/comments" --raw-field "body=$(cat /tmp/skeema-ci/skeema-diff.sql)"
+        magic_comment_hint="<!-- skeema:diff:comment -->"
+        magic_comment_id=$(/tmp/skeema-ci/hub api "/repos/rajkuntal/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments?per_page=100" | jq -r ".[] | select(.body | startswith(\"${magic_comment_hint}\")) | .id" | head -n 1)
+        comment_body="$(printf -- "$magic_comment_hint\n ``` sql \n $skeema_diff ``` \n")"
+        if [ -z "$magic_comment_id" ] ; then
+          # First time, add new comment
+          /tmp/skeema-ci/hub api "/repos/rajkuntal/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --raw-field "body=$comment_body"
+        else
+          # Magic comment exists. Edit it.
+          /tmp/skeema-ci/hub api --method PATCH "/repos/rajkuntal/${GITHUB_REPOSITORY}/issues/comments/${magic_comment_id}" --raw-field "body=$comment_body"
+        fi
     # Uncomment below two lines for debugging
     #- name: Setup tmate session
     #  uses: mxschmitt/action-tmate@v2
