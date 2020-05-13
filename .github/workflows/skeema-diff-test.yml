@@ -65,7 +65,7 @@ jobs:
         GITHUB_USER: rajkuntal
         PR_NUMBER: ${{ github.event.pull_request.number }}
       run: |
-          /tmp/skeema-ci/hub api "/repos/rajkuntal/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --raw-field "body=$(cat /tmp/skeema-ci/skeema-diff.sql)"
+          /tmp/skeema-ci/hub api "/repos/rajkuntal/database-config/issues/${PR_NUMBER}/comments" --raw-field "body=$(cat /tmp/skeema-ci/skeema-diff.sql)"
     # Uncomment below two lines for debugging
     #- name: Setup tmate session
     #  uses: mxschmitt/action-tmate@v2
