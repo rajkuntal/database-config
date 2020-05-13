@@ -53,7 +53,7 @@ jobs:
         ref: ${{ github.event.pull_request.head.sha }}
     - name: Skeema diff to skeema-diff.sql file
       run: |
-          /tmp/skeema-ci/skeema push skeema-diff-ci --allow-unsafe --ddl-wrapper='echo "\n-- skeema:ddl:begin\n"{DDL}";\n-- skeema:ddl:end"' | sed -e 's/^USE /-- skeema:ddl:use /g' | sed -n '/^-- skeema:ddl:use /p;/^-- skeema:ddl:begin/,/^-- skeema:ddl:end/p' | tee /tmp/skeema-ci/skeema-diff.sql
+          /tmp/skeema-ci/skeema diff skeema-diff-ci >> /tmp/skeema-ci/skeema-diff.sql
     - name: comment PR
       # Do two things:
       # - Add a new comment reflecting the change in this PR (the schema change if any, or lack thereof)
