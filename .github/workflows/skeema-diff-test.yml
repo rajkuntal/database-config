@@ -1,0 +1,48 @@
+name: skeema-diff-test
+
+on:
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  skeema-diff:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+        - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    steps:
+    - name: Verify MySQL connection from host
+      run: |
+        sudo apt-get install -y mysql-client
+        mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uroot -proot -e "SHOW DATABASES"
+    - name: checkout base branch
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.pull_request.base.sha }}
+    - name: Download skeema
+      run: |
+          (
+            mkdir -p /tmp/skeema-ci
+            cd /tmp/skeema-ci
+
+            curl -s -L https://github.com/github/skeema/releases/download/v1.3.0-gh/skeema_1.3.0_linux_amd64.tar.gz > skeema.tar.gz
+            tar xzf skeema.tar.gz skeema
+          )
+    - name: Skeema push to local MySQL
+      run: |
+          /tmp/skeema-ci/skeema push skeema-diff-ci
+    - name: checkout pull request branch
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+    - name: Skeema diff to skeema-diff.sql file
+      run: |
+          /tmp/skeema-ci/skeema diff skeema-diff-ci tee /tmp/skeema-ci/skeema-diff.sql
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v2
