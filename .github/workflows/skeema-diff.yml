@@ -63,9 +63,6 @@ jobs:
         fi
     - name: Fetch skeema
       run: |
-        if [ ! -f /tmp/skeema-ci/skeema-file ] ; then
-          exit 0
-        fi
         (
           mkdir -p /tmp/skeema-ci
           cd /tmp/skeema-ci
