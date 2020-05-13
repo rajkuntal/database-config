@@ -14,6 +14,12 @@ jobs:
     # - migration:skeefree:queued: skeefree has queued the migrations for execution. This is a point of no return. We're committed to the migration.
     # - migration:late:commits: new commits came in after the migration was queued. We won't consider further schema changes. Humans should look into why these commits came in at this stage.
     runs-on: ubuntu-latest
+    container: ubuntu
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
     steps:
     - name: Fetch hub
       run: |
@@ -92,8 +98,6 @@ jobs:
           touch /tmp/skeema-ci/skeema-diff.sql
           exit 0
         fi
-        set -o pipefail
-        cd $(cat /tmp/skeema-ci/skeema-dir)
         /tmp/skeema-ci/skeema diff skeema-diff-ci tee /tmp/skeema-ci/skeema-diff.sql
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v2
