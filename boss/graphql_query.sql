@@ -7,6 +7,7 @@ CREATE TABLE `graphql_query` (
   `modified_date` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_by` varchar(20) DEFAULT NULL,
   `modified_by` varchar(20) DEFAULT NULL,
+  `modified_by_2` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
