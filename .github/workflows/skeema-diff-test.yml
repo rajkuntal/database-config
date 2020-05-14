@@ -111,7 +111,7 @@ jobs:
         PR_NUMBER: ${{ github.event.pull_request.number }}
       if [-e /tmp/skeema-ci/skeema-diff-label-detected.hint] ; then
         if [! -e /tmp/skeema-ci/skeema-diff-exists-hint.hint ] ; then
-          /tmp/skeema-ci/hub api --method DELETE "/repos/rajkuntal/database-config/issues/${PR_NUMBER}/labels/skeema-diff" || :
+          /tmp/skeema-ci/hub api --method DELETE "/repos/rajkuntal/database-config/issues/${PR_NUMBER}/labels/skeema-diff"
         fi
       else
         if [ -e /tmp/skeema-ci/skeema-diff-exists-hint.hint ] ; then
