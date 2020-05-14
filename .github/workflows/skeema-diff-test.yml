@@ -63,7 +63,7 @@ jobs:
             -- ddl queries /g' /tmp/skeema-ci/skeema-diff.sql
             touch /tmp/skeema-ci/skeema-diff-hint.hint
           else
-            echo '-- skeema-diff-comment \n\n ```sql ' >> /tmp/skeema-ci/skeema-diff.sql
+            echo $'-- skeema-diff-comment \n\n ```sql ' >> /tmp/skeema-ci/skeema-diff.sql
           fi
     - uses: actions/checkout@v1
     - name: Find dml queries

@@ -5,5 +5,5 @@ if [ -s /tmp/skeema-ci/skeema-diff.sql ] ; then
 	-- ddl queries /g' /tmp/skeema-ci/skeema-diff.sql
 	touch /tmp/skeema-ci/skeema-diff-hint.hint
 else
-	echo '-- skeema-diff-comment \n\n ```sql ' >> /tmp/skeema-ci/skeema-diff.sql
+	echo $'-- skeema-diff-comment \n\n ```sql ' >> /tmp/skeema-ci/skeema-diff.sql
 fi
