@@ -105,13 +105,16 @@ jobs:
       run: |
         /tmp/skeema-ci/hub api "/repos/rajkuntal/database-config/issues/${PR_NUMBER}/labels" | jq '.[].name' -r | grep -q "skeema-diff" && touch /tmp/skeema-ci/skeema-diff-label-detected.hint || :
     - name: Apply label
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GITHUB_USER: rajkuntal
-        PR_NUMBER: ${{ github.event.pull_request.number }}
-            curl -X POST -u ${GITHUB_USER}:${GITHUB_TOKEN} \
-              "https://api.github.com/repos/rajkuntal/database-config/issues/${PR_NUMBER}/labels" \
-              -H "Content-type: application/json" -H "Accept: application/json" -d '["skeema-diff"]'
+      uses: actions/github-script@0.9.0
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['Triage']
+            })
     # add below two lines for debugging in any step
     #- name: Setup tmate session
     #  uses: mxschmitt/action-tmate@v2
