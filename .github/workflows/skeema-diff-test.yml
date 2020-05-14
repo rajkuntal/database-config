@@ -60,9 +60,12 @@ jobs:
           \
           ```sql \
           -- ddl queries /g' /tmp/skeema-ci/skeema-diff.sql
+    - uses: actions/checkout@v1
+    - name: find dml queries
+      run: |
+          (git fetch origin master:master) && (git diff --name-only master) | tee /tmp/skeema-ci/dml-changes.txt
     - name: find dml queries files and merge with skeema-diff
       run: |
-          git diff master..test_pr_2 --name-only | tee /tmp/skeema-ci/dml-changes.txt
           dmQueries="DML_Queries"
           if grep -q "$dmQueries" /tmp/skeema-ci/dml-changes.txt; then
             echo '' >> /tmp/skeema-ci/skeema-diff.sql
