@@ -54,17 +54,22 @@ jobs:
     - name: Skeema diff to skeema-diff.sql file
       run: |
           /tmp/skeema-ci/skeema diff skeema-diff-ci | tee /tmp/skeema-ci/skeema-diff.sql
-    - name: format skeema-diff.sql file
+    - name: Format skeema-diff.sql file
       run: |
-          sed -i 's/-- instance: 127.0.0.1:3306/-- skeema-diff-comment \
-          \
-          ```sql \
-          -- ddl queries /g' /tmp/skeema-ci/skeema-diff.sql
+          if [ -s /tmp/skeema-ci/skeema-diff.sql ] ; then
+            sed -i 's/-- instance: 127.0.0.1:3306/-- skeema-diff-comment \
+            \
+            ```sql \
+            -- ddl queries /g' /tmp/skeema-ci/skeema-diff.sql
+            touch /tmp/skeema-ci/skeema-diff-hint.hint
+          else
+            echo '-- skeema-diff-comment \n\n ```sql ' >> /tmp/skeema-ci/skeema-diff.sql
+          fi
     - uses: actions/checkout@v1
-    - name: find dml queries
+    - name: Find dml queries
       run: |
           (git fetch origin master:master) && (git diff --name-only master) | tee /tmp/skeema-ci/dml-changes.txt
-    - name: find dml queries files and merge with skeema-diff
+    - name: Merge dml files with skeema-diff file
       run: |
           dmQueries="DML_Queries"
           if grep -q "$dmQueries" /tmp/skeema-ci/dml-changes.txt; then
@@ -79,7 +84,7 @@ jobs:
             fi
           done < /tmp/skeema-ci/dml-changes.txt
           cat /tmp/skeema-ci/skeema-diff.sql /tmp/skeema-ci/DML_Queries*.sql | tee /tmp/skeema-ci/all_sql_changes.sql
-    - name: comment PR
+    - name: Comment PR
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_USER: rajkuntal
@@ -92,7 +97,7 @@ jobs:
           else
             /tmp/skeema-ci/hub api --method PATCH "/repos/rajkuntal/database-config/issues/comments/${magic_comment_id}" --raw-field "body=$(cat /tmp/skeema-ci/all_sql_changes.sql)"
           fi
-    - name: apply label
+    - name: Apply label
       uses: actions/github-script@0.9.0
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
@@ -103,6 +108,6 @@ jobs:
             repo: context.repo.repo,
             labels: ['skeema-diff']
           })
-    # Uncomment below two lines for debugging
+    # add below two lines for debugging in any step
     #- name: Setup tmate session
     #  uses: mxschmitt/action-tmate@v2
