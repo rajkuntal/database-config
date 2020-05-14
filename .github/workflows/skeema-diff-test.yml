@@ -61,7 +61,7 @@ jobs:
             \
             ```sql \
             -- ddl queries /g' /tmp/skeema-ci/skeema-diff.sql
-            touch /tmp/skeema-ci/skeema-diff-hint.hint
+            touch /tmp/skeema-ci/skeema-diff-exists-hint.hint
           else
             echo $'-- skeema-diff-comment \n\n ```sql ' >> /tmp/skeema-ci/skeema-diff.sql
           fi
@@ -97,17 +97,29 @@ jobs:
           else
             /tmp/skeema-ci/hub api --method PATCH "/repos/rajkuntal/database-config/issues/comments/${magic_comment_id}" --raw-field "body=$(cat /tmp/skeema-ci/all_sql_changes.sql)"
           fi
-    - name: Apply label
-      uses: actions/github-script@0.9.0
-      with:
-        github-token: ${{secrets.GITHUB_TOKEN}}
-        script: |
-          github.issues.addLabels({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            labels: ['skeema-diff']
-          })
+    - name: Check label
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_USER: rajkuntal
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+      run: |
+        /tmp/skeema-ci/hub api "/repos/rajkuntal/database-config/issues/${PR_NUMBER}/labels" | jq '.[].name' -r | grep -q "skeema-diff" && touch /tmp/skeema-ci/skeema-diff-label-detected.hint || :
+    - name: Apply/Remove label
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_USER: rajkuntal
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+      if [-e /tmp/skeema-ci/skeema-diff-label-detected.hint] ; then
+        if [! -e /tmp/skeema-ci/skeema-diff-exists-hint.hint ] ; then
+          /tmp/skeema-ci/hub api --method DELETE "/repos/rajkuntal/database-config/issues/${PR_NUMBER}/labels/skeema-diff" || :
+        fi
+      else
+        if [ -e /tmp/skeema-ci/skeema-diff-exists-hint.hint ] ; then
+          curl -X POST -u ${GITHUB_USER}:${GITHUB_TOKEN} \
+              "https://api.github.com/repos/rajkuntal/database-config/issues/${PR_NUMBER}/labels" \
+              -H "Content-type: application/json" -H "Accept: application/json" -d '["skeema-diff"]'
+        fi
+      fi
     # add below two lines for debugging in any step
     #- name: Setup tmate session
     #  uses: mxschmitt/action-tmate@v2
