@@ -22,6 +22,7 @@ CREATE TABLE `cron_job` (
   `last_successful_run_date` datetime DEFAULT NULL COMMENT 'new column, last time the task ran successfully',
   `created_by` varchar(64) DEFAULT NULL,
   `modified_by` varchar(64) DEFAULT NULL,
+  `modified_by_2` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
