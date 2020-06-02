@@ -3,7 +3,7 @@ pipeline {
 		stages {
 			stage('Skeema-diff') {
 				agent {
-                	/usr/local/bin/docker {
+                	docker {
                 		image 'mysql/mysql-server'
                 		args '--name some-mysql -e MYSQL_ROOT_PASSWORD=root -d'
                 	}
