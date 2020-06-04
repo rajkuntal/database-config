@@ -1,8 +1,5 @@
 pipeline {
-		agent none 
-    options { 
-          skipDefaultCheckout(true) 
-        }
+		agent none
 		stages {
 			stage('Skeema-diff') {
         steps {
@@ -10,7 +7,7 @@ pipeline {
           allOf
               {
                 environment name: 'CHANGE_ID', value: '';
-                changeset '*.sql'
+                changeset "*.sql""
               }
           }
           echo 'hello inside sql changes'
