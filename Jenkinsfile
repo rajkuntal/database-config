@@ -7,8 +7,8 @@ pipeline {
           }
        }
 			stage('Skeema-diff') {
+        when { environment name: 'CHANGE_ID', value: '' }
         steps {
-            when { environment name: 'CHANGE_ID', value: '' }
             echo 'hello inside sql changes'
 			 }
 		}
