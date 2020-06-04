@@ -7,10 +7,15 @@ pipeline {
           }
        }
 			stage('Skeema-diff') {
-        when { changeset "**/*.sql" }
+        when {
+          allOf {
+            not { environment name: 'CHANGE_ID', value: '' }
+            changeset "**/*.sql" 
+          }
+        }
         steps {
-            echo 'hello inside sql changes'
-			 }
-		}
-	}
+          echo 'hello inside sql changes'
+        }
+      } 
+	 }
 }
