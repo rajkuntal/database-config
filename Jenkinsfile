@@ -9,7 +9,7 @@ pipeline {
         when {
           allOf
               {
-                environment name: 'CHANGE_ID', value: ''
+                environment name: 'CHANGE_ID', value: '';
                 changeset '*.sql'
               }
           }
