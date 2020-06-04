@@ -10,7 +10,7 @@ pipeline {
         when {
           allOf {
             not { environment name: 'CHANGE_ID', value: '' }
-            changeset "**/*.sql" 
+            changeset "*.sql" 
           }
         }
         steps {
