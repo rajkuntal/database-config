@@ -7,7 +7,7 @@ pipeline {
             echo "${env.CHANGE_TARGET}"
             echo "${env.CHANGE_BRANCH}"
             echo "${env.CHANGE_ID}"
-            sh 'printenv'
+            sh 'git checkout "${env.CHANGE_TARGET}"'
           }
        }
 			stage('Skeema-diff') {
