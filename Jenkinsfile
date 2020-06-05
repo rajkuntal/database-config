@@ -4,7 +4,7 @@ pipeline {
       stage('Build here') {
           steps {
             echo 'hello outside'
-            echo "${env.CHANGE_TARGET}"
+            sh 'echo ${CHANGE_TARGET}'
             echo "${env.CHANGE_BRANCH}"
             echo "${env.CHANGE_ID}"
             sh 'git checkout $CHANGE_TARGET'
