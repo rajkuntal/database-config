@@ -4,13 +4,19 @@ pipeline {
       stage('Build here') {
           steps {
             echo 'hello outside'
+            echo ${env.CHANGE_TARGET}
+            echo ${env.CHANGE_BRANCH}
+            echo ${env.CHANGE_ID}
+            sh 'git checkout ${CHANGE_TARGET}'
+            sh 'printenv | sort'
+
           }
        }
 			stage('Skeema-diff') {
         when {
           allOf {
             not { environment name: 'CHANGE_ID', value: '' }
-            changeset "*.sql" 
+            // changeset "*.sql" 
           }
         }
         steps {
