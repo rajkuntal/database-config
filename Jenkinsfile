@@ -7,7 +7,7 @@ pipeline {
             echo ${env.CHANGE_TARGET}
             echo ${env.CHANGE_BRANCH}
             echo ${env.CHANGE_ID}
-            sh 'git checkout ${CHANGE_TARGET}'
+            sh 'git checkout ${env.CHANGE_TARGET}'
             sh 'printenv | sort'
 
           }
