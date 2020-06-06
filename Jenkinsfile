@@ -14,6 +14,7 @@ pipeline {
           }
         }
         steps {
+          sh 'while ! mysqladmin ping -h0.0.0.0 --silent; do sleep 1; done'
           sh 'apt-get update'
           sh 'apt-get -y install tar'
           sh 'apt-get -y install curl'
