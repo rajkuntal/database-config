@@ -2,16 +2,21 @@ pipeline {
   agent any
   stages {
     stage('db-change') {
-      when {
-        allOf {
-          not { environment name: 'CHANGE_ID', value: '' }
-        }
-      }
       agent {
         docker {
           image 'mysql:5.7'
           args '-u root:sudo -e MYSQL_ROOT_PASSWORD=root -d'
         }
+
+      }
+      when {
+        allOf {
+          not {
+            environment name: 'CHANGE_ID', value: ''
+          }
+
+        }
+
       }
       steps {
         sh 'apt-get update'
