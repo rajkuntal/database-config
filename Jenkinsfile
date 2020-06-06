@@ -8,7 +8,6 @@ pipeline {
   stages {
     stage('db-change') {
       steps {
-        ws(dir: '/tmp/codebase/')
         sh 'mysql -hlocalhost -uroot -proot'
       }
     }
