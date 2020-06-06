@@ -17,7 +17,7 @@ pipeline {
           sh 'apt-get update'
           sh 'apt-get -y install tar'
           sh 'apt-get -y install curl'
-          sh 'mysql -uroot -proot'
+          sh 'mysql -hlocalhost -uroot -proot'
           sh '''
             mkdir -p /tmp/skeema-ci/
             cd /tmp/skeema-ci/
