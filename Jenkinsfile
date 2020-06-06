@@ -37,7 +37,7 @@ pipeline {
             mv hub-linux-amd64-2.12.3/bin/hub hub'''
         sh 'git checkout ${CHANGE_TARGET}'
         sh '/tmp/skeema-ci/skeema push skeema-diff-ci'
-        sh 'git checkout ${CHANGE_BRANCH}'
+        sh 'git checkout remotes/origin/${CHANGE_BRANCH}'
         sh '/tmp/skeema-ci/skeema diff skeema-diff-ci | tee /tmp/skeema-ci/skeema-diff.sql'
         sleep(unit: 'SECONDS', time: 1)
         sh '''if [ -s /tmp/skeema-ci/skeema-diff.sql ] ; then
