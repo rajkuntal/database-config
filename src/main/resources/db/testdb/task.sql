@@ -7,6 +7,7 @@ CREATE TABLE `task` (
   `message` text,
   `task_arguments` text,
   `top_level_key` varchar(128) DEFAULT NULL,
+  `top_level_key_1` varchar(128) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `taskName_lastRunDate_idx` (`task_name`,`last_run_date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
