@@ -1,6 +1,6 @@
 default-character-set=utf8
 default-collation=utf8_general_ci
-schema=inventory
+schema=testdb
 
 [skeema-diff-ci]
 host=localhost
