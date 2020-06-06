@@ -10,7 +10,7 @@ pipeline {
         agent {
           docker {
             image 'percona:5.7'
-            args '-u root:sudo -e MYSQL_ROOT_PASSWORD=root -d'
+            args '-e MYSQL_ROOT_PASSWORD=root -d'
           }
         }
         steps {
