@@ -14,7 +14,7 @@ pipeline {
         sh 'apt-get -y install tar'
         sh 'apt-get -y install curl'
         sh 'service mysql restart'
-        sh 'mysql -hlocalhost -uroot -proot -e "show databases;"  >> /tmp/databases.txt'
+        sh 'mysql -hlocalhost -uroot -proot -e "CREATE USER \'monty\'@\'localhost\' IDENTIFIED BY \'some_pass\'; GRANT ALL PRIVILEGES ON *.* TO \'monty\'@\'localhost\' WITH GRANT OPTION; CREATE USER \'monty\'@\'%\' IDENTIFIED BY \'some_pass\'; GRANT ALL PRIVILEGES ON *.* TO \'monty\'@\'%\' WITH GRANT OPTION;'
         sleep(unit: 'SECONDS', time: 1)
         sh '''
           mkdir -p /tmp/skeema-ci/
