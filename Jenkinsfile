@@ -1,16 +1,17 @@
 pipeline {
-		agent none
+		agent any
 		stages {
       stage('Build here') {
+        agent {
+          docker {
+            image 'mysql:latest'
+            args '-u root:sudo -e MYSQL_ROOT_PASSWORD=root -d'
+          }
           steps {
-            echo 'hello outside'
-            sh 'echo ${CHANGE_ID}'
-            sh 'echo ${CHANGE_TARGET}'
-            echo "${env.CHANGE_BRANCH}"
-            echo "${env.CHANGE_ID}"
             sh 'git checkout $CHANGE_TARGET'
           }
-       }
+        }
+      }
 			stage('Skeema-diff') {
         when {
           allOf {
