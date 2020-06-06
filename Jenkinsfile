@@ -11,10 +11,10 @@ pipeline {
           docker {
             image 'mysql:5.7'
             args '-u root:sudo -e MYSQL_ROOT_PASSWORD=root -d'
+            sh 'while ! mysqladmin ping -h0.0.0.0 --silent; do sleep 1; done'
           }
         }
         steps {
-          sh 'while ! mysqladmin ping -h0.0.0.0 --silent; do sleep 1; done'
           sh 'apt-get update'
           sh 'apt-get -y install tar'
           sh 'apt-get -y install curl'
