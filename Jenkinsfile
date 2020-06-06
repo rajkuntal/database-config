@@ -14,6 +14,9 @@ pipeline {
           }
         }
         steps {
+          sh 'apt-get update'
+          sh 'apt-get -y install tar'
+          sh 'apt-get -y install curl'
           sh 'service mysql restart'
           sh 'mysql -hlocalhost -uroot -proot'
           sh '''
