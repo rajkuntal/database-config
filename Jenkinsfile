@@ -22,6 +22,7 @@ pipeline {
         sh 'apt-get update'
         sh 'apt-get -y install tar'
         sh 'apt-get -y install curl'
+        sh 'apt-get -y install git'
         sh 'service mysql restart'
         sh 'mysql -hlocalhost -uroot -proot -e "CREATE USER \'skeema\'@\'localhost\' IDENTIFIED BY \'skeemaPass\'; GRANT ALL PRIVILEGES ON *.* TO \'skeema\'@\'localhost\' WITH GRANT OPTION; CREATE USER \'skeema\'@\'%\' IDENTIFIED BY \'skeemaPass\'; GRANT ALL PRIVILEGES ON *.* TO \'skeema\'@\'%\' WITH GRANT OPTION;"'
         sh '''
@@ -35,6 +36,22 @@ pipeline {
         sh 'git checkout ${CHANGE_BRANCH}'
         sh '/tmp/skeema-ci/skeema diff skeema-diff-ci | tee /tmp/skeema-ci/skeema-diff.sql'
         sleep(unit: 'SECONDS', time: 1)
+        sh '''if [ -s /tmp/skeema-ci/skeema-diff.sql ] ; then
+            sed -i \'s/-- instance: 127.0.0.1:3306/-- skeema-diff-comment \\
+            \\
+            ```sql \\
+            -- ddl queries /g\' /tmp/skeema-ci/skeema-diff.sql
+            touch /tmp/skeema-ci/skeema-diff-exists-hint.hint
+          else
+            echo $\'-- skeema-diff-comment \\n\\n ```sql \' >> /tmp/skeema-ci/skeema-diff.sql
+          fi'''
+        sh '''magic_comment_hint="-- skeema-diff-comment"
+          magic_comment_id=$(/tmp/skeema-ci/hub api "/repos/rajkuntal/database-config/issues/17/comments?per_page=100" | jq -r ".[] | select(.body | startswith(\\"${magic_comment_hint}\\")) | .id" | head -n 1)
+          if [ -z "$magic_comment_id" ] ; then
+            /tmp/skeema-ci/hub api "/repos/rajkuntal/database-config/issues/17/comments" --raw-field "body=$(cat /tmp/skeema-ci/skeema-diff.sql)"
+          else
+            /tmp/skeema-ci/hub api --method PATCH "/repos/rajkuntal/database-config/issues/comments/${magic_comment_id}" --raw-field "body=$(cat /tmp/skeema-ci/skeema-diff.sql)"
+          fi'''
       }
     }
 
