@@ -15,7 +15,7 @@ pipeline {
         sh 'apt-get -y install curl'
         sh 'service mysql restart'
         sh 'mysql -hlocalhost -uroot -proot -e "show databases;"  >> /tmp/databases.txt'
-        sleep(unit: 'MINUTES', time: 30)
+        sleep(unit: 'SECONDS', time: 1)
         sh '''
           mkdir -p /tmp/skeema-ci/
           cd /tmp/skeema-ci
