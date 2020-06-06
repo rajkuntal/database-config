@@ -31,6 +31,10 @@ pipeline {
           curl -s -L https://github.com/skeema/skeema/releases/download/v1.4.3/skeema_1.4.3_linux_amd64.tar.gz > skeema.tar.gz
           tar xzf skeema.tar.gz skeema
         '''
+        sh '''            cd /tmp/skeema-ci/
+            curl -s -L https://github.com/github/hub/releases/download/v2.12.3/hub-linux-amd64-2.12.3.tgz > hub-linux-amd64-2.12.3.tgz
+            tar xzf hub-linux-amd64-2.12.3.tgz hub-linux-amd64-2.12.3/bin/hub
+            mv hub-linux-amd64-2.12.3/bin/hub hub'''
         sh 'git checkout ${CHANGE_TARGET}'
         sh '/tmp/skeema-ci/skeema push skeema-diff-ci'
         sh 'git checkout ${CHANGE_BRANCH}'
