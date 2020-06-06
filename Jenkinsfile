@@ -14,7 +14,7 @@ pipeline {
           }
         }
         steps {
-          sh 'apt-get update'
+          sh 'sudo apt-get update'
           sh 'apt-get -y install tar'
           sh 'apt-get -y install curl'
           sh 'mysql -uroot -proot'
