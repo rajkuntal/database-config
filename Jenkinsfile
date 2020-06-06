@@ -11,8 +11,7 @@ pipeline {
       }
       steps {
         sh 'service mysql restart'
-        sh 'mysql -hlocalhost -uroot -proot'
-        sh 'show databases;'
+        sh 'mysql -hlocalhost -uroot -proot <<< "select database();"'
       }
     }
 
