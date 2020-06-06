@@ -9,12 +9,12 @@ pipeline {
         }
         agent {
           docker {
-            image 'percona:5.7'
-            args '-e MYSQL_ROOT_PASSWORD=root -d'
+            image 'mysql:5.7'
+            args '-u root:sudo -e MYSQL_ROOT_PASSWORD=root -d'
           }
         }
         steps {
-          sh 'sudo apt-get update'
+          sh 'apt-get update'
           sh 'apt-get -y install tar'
           sh 'apt-get -y install curl'
           sh 'mysql -uroot -proot'
