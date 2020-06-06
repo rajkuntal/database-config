@@ -9,7 +9,7 @@ pipeline {
         }
         agent {
           docker {
-            image 'mysql:5.7'
+            image 'percona:5.7'
             args '-u root:sudo -e MYSQL_ROOT_PASSWORD=root -d'
           }
         }
@@ -17,8 +17,7 @@ pipeline {
           sh 'apt-get update'
           sh 'apt-get -y install tar'
           sh 'apt-get -y install curl'
-          sh 'service mysql restart'
-          sh 'mysql -hlocalhost -uroot -proot'
+          sh 'mysql -uroot -proot'
           sh '''
             mkdir -p /tmp/skeema-ci/
             cd /tmp/skeema-ci/
