@@ -38,7 +38,7 @@ pipeline {
             mv hub-linux-amd64-2.12.3/bin/hub hub'''
         sh 'git checkout ${CHANGE_TARGET}'
         sh '/tmp/skeema-ci/skeema push skeema-diff-ci'
-        sleep(unit: 'SECONDS', time: 1)
+        sleep(unit: 'MINUTES', time: 5)
         sh 'git checkout PR_${CHANGE_ID}'
         sh '/tmp/skeema-ci/skeema diff skeema-diff-ci | tee /tmp/skeema-ci/skeema-diff.sql'
         sh '''if [ -s /tmp/skeema-ci/skeema-diff.sql ] ; then
