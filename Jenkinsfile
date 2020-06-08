@@ -43,7 +43,6 @@ pipeline {
         sh '/tmp/skeema-ci/skeema diff skeema-diff-ci | tee /tmp/skeema-ci/skeema-diff.sql'
         sh '''if [ -s /tmp/skeema-ci/skeema-diff.sql ] ; then
             sed -i \'s/-- instance: 127.0.0.1:3306/-- skeema-diff-comment \\
-            \\
             ```sql \\
             -- ddl queries /g\' /tmp/skeema-ci/skeema-diff.sql
             touch /tmp/skeema-ci/skeema-diff-exists-hint.hint
