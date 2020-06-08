@@ -38,7 +38,6 @@ pipeline {
             mv hub-linux-amd64-2.12.3/bin/hub hub'''
         sh 'git checkout ${CHANGE_TARGET}'
         sh '/tmp/skeema-ci/skeema push skeema-diff-ci'
-        sleep(unit: 'SECONDS', time: 1)
         sh 'git checkout PR-${CHANGE_ID}'
         sh '/tmp/skeema-ci/skeema diff skeema-diff-ci | tee /tmp/skeema-ci/skeema-diff.sql'
         sh '''if [ -s /tmp/skeema-ci/skeema-diff.sql ] ; then
@@ -57,6 +56,7 @@ pipeline {
             /tmp/skeema-ci/hub api --method PATCH "/repos/rajkuntal/database-config/issues/comments/${magic_comment_id}" --raw-field "body=$(cat /tmp/skeema-ci/skeema-diff.sql)"
           fi'''
         getChangeString()
+        sleep(unit: 'MINUTES', time: 5)
       }
     }
 
