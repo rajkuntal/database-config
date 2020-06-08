@@ -19,6 +19,9 @@ pipeline {
 
       }
       steps {
+        sh 'echo ${GIT_COMMIT}'
+        sh 'echo ${BUILD_NUMBER}'
+        sh 'echo ${BUILD_ID}'
         sh 'apt-get update'
         sh 'apt-get -y install tar'
         sh 'apt-get -y install curl'
@@ -37,7 +40,7 @@ pipeline {
             mv hub-linux-amd64-2.12.3/bin/hub hub'''
         sh 'git checkout ${CHANGE_TARGET}'
         sh '/tmp/skeema-ci/skeema push skeema-diff-ci'
-        sh 'git checkout remotes/origin/${CHANGE_BRANCH}'
+        sh 'git checkout origin/${CHANGE_BRANCH}'
         sh '/tmp/skeema-ci/skeema diff skeema-diff-ci | tee /tmp/skeema-ci/skeema-diff.sql'
         sleep(unit: 'SECONDS', time: 1)
         sh '''if [ -s /tmp/skeema-ci/skeema-diff.sql ] ; then
