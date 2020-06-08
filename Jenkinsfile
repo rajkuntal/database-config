@@ -48,7 +48,7 @@ pipeline {
           else
             echo $\'-- skeema-diff-comment \\n\\n ```sql \' >> /tmp/skeema-ci/skeema-diff.sql
           fi'''
-        sh '(git fetch origin master:master) && (git diff --name-only master) | tee /tmp/skeema-ci/dml-changes.txt'
+        sh '(git fetch origin ${CHANGE_TARGET}:${CHANGE_TARGET}) && (git diff --name-only ${CHANGE_TARGET}) | tee /tmp/skeema-ci/dml-changes.txt'
         sh '''dmQueries="DML_Queries"
             if grep -q "$dmQueries" /tmp/skeema-ci/dml-changes.txt; then
               echo \'\' >> /tmp/skeema-ci/skeema-diff.sql
