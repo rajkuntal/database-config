@@ -48,22 +48,7 @@ pipeline {
           else
             echo $\'-- skeema-diff-comment \\n\\n ```sql \' >> /tmp/skeema-ci/skeema-diff.sql
           fi'''
-        sh '(git fetch origin ${CHANGE_TARGET}:${CHANGE_TARGET}) && (git diff --name-only ${CHANGE_TARGET}) | tee /tmp/skeema-ci/dml-changes.txt'
-        sh '''dmQueries="DML_Queries"
-            if grep -q "$dmQueries" /tmp/skeema-ci/dml-changes.txt; then
-              echo \'\' >> /tmp/skeema-ci/skeema-diff.sql
-              echo \'\' >> /tmp/skeema-ci/skeema-diff.sql
-              echo \'-- dml queries\' >> /tmp/skeema-ci/skeema-diff.sql
-            fi
-            while IFS="" read -r p || [ -n "$p" ]
-            do
-              if [[ "$p" == *"/resources/db/predeploy"* ]]; then
-                cp -v "$p" /tmp/skeema-ci/"${p//\\//_}"
-              elif [[ "$p" == *"/resources/db/postdeploy"* ]]; then
-                cp -v "$p" /tmp/skeema-ci/"${p//\\//_}"
-              fi
-            done < /tmp/skeema-ci/dml-changes.txt
-            cat /tmp/skeema-ci/skeema-diff.sql /tmp/skeema-ci/DML_Queries*.sql | tee /tmp/skeema-ci/all_sql_changes.sql'''
+        addDmlQueriesIfAnyAvailable()
         sh '''magic_comment_hint="-- skeema-diff-comment"
           magic_comment_id=$(/tmp/skeema-ci/hub api "/repos/rajkuntal/database-config/issues/17/comments?per_page=100" | jq -r ".[] | select(.body | startswith(\\"${magic_comment_hint}\\")) | .id" | head -n 1)
           if [ -z "$magic_comment_id" ] ; then
@@ -76,4 +61,30 @@ pipeline {
     }
 
   }
+}
+
+
+def addDmlQueriesIfAnyAvailable()
+{
+  (git fetch origin ${CHANGE_TARGET}:${CHANGE_TARGET}) && (git diff --name-only ${CHANGE_TARGET}) | tee /tmp/skeema-ci/dml-changes.txt
+  preDeploy="/resources/db/predeploy"
+  postDeploy="/resources/db/postdeploy"
+  if grep -q "$preDeploy" /tmp/skeema-ci/dml-changes.txt; then
+    echo \'\' >> /tmp/skeema-ci/skeema-diff.sql
+    echo \'\' >> /tmp/skeema-ci/skeema-diff.sql
+    echo \'-- dml queries\' >> /tmp/skeema-ci/skeema-diff.sql
+  elif grep -q "$postDeploy" /tmp/skeema-ci/dml-changes.txt; then
+    echo \'\' >> /tmp/skeema-ci/skeema-diff.sql
+    echo \'\' >> /tmp/skeema-ci/skeema-diff.sql
+    echo \'-- dml queries\' >> /tmp/skeema-ci/skeema-diff.sql
+  fi
+  while IFS="" read -r p || [ -n "$p" ]
+  do
+    if [[ "$p" == *"/resources/db/predeploy"* ]]; then
+      cp -v "$p" /tmp/skeema-ci/"${p//\\//_}"
+    elif [[ "$p" == *"/resources/db/postdeploy"* ]]; then
+      cp -v "$p" /tmp/skeema-ci/"${p//\\//_}"
+    fi
+  done < /tmp/skeema-ci/dml-changes.txt
+  cat /tmp/skeema-ci/skeema-diff.sql /tmp/skeema-ci/DML_Queries*.sql | tee /tmp/skeema-ci/all_sql_changes.sql
 }
