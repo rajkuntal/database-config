@@ -39,7 +39,7 @@ pipeline {
         sh 'git checkout ${CHANGE_TARGET}'
         sh '/tmp/skeema-ci/skeema push skeema-diff-ci'
         sleep(unit: 'SECONDS', time: 1)
-        sh 'git checkout ${CHANGE_ID}'
+        sh 'git checkout PR_${CHANGE_ID}'
         sh '/tmp/skeema-ci/skeema diff skeema-diff-ci | tee /tmp/skeema-ci/skeema-diff.sql'
         sh '''if [ -s /tmp/skeema-ci/skeema-diff.sql ] ; then
             sed -i \'s/-- instance: 127.0.0.1:3306/-- skeema-diff-comment \\
