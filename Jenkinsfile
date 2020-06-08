@@ -32,7 +32,7 @@ pipeline {
           curl -s -L https://github.com/skeema/skeema/releases/download/v1.4.3/skeema_1.4.3_linux_amd64.tar.gz > skeema.tar.gz
           tar xzf skeema.tar.gz skeema
         '''
-        sh '''            cd /tmp/skeema-ci/
+        sh '''cd /tmp/skeema-ci/
             curl -s -L https://github.com/github/hub/releases/download/v2.12.3/hub-linux-amd64-2.12.3.tgz > hub-linux-amd64-2.12.3.tgz
             tar xzf hub-linux-amd64-2.12.3.tgz hub-linux-amd64-2.12.3/bin/hub
             mv hub-linux-amd64-2.12.3/bin/hub hub'''
@@ -57,7 +57,9 @@ pipeline {
             fi
             while IFS="" read -r p || [ -n "$p" ]
             do
-              if [[ "$p" == *"/resources/db/postdeploy"* ]  || ["$p" == *"/resources/db/predeploy"* ]]; then
+              if [[ "$p" == *"/resources/db/predeploy"* ]]; then
+                cp -v "$p" /tmp/skeema-ci/"${p//\\//_}"
+              elif [[ "$p" == *"/resources/db/postdeploy"* ]]; then
                 cp -v "$p" /tmp/skeema-ci/"${p//\\//_}"
               fi
             done < /tmp/skeema-ci/dml-changes.txt
