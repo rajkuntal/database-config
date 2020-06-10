@@ -49,8 +49,7 @@ pipeline {
             fi
           '''
         sh '(git fetch origin ${CHANGE_TARGET}:${CHANGE_TARGET}) && (git diff --name-only ${CHANGE_TARGET}) | tee /tmp/skeema-ci/dml-changes.txt'
-        script {
-            while IFS="" read -r filePath || [ -n "$filePath" ]
+        sh ''' while IFS="" read -r filePath || [ -n "$filePath" ]
               do
                 if [[ "$filePath" == *"/resources/db/predeploy"* ]]; then
                   cp -v "$filePath" /tmp/skeema-ci/dml_query_$counter.sql
@@ -62,7 +61,7 @@ pipeline {
               counter=$(( $counter + 1 ))
             done < /tmp/skeema-ci/dml-changes.txt
             cat /tmp/skeema-ci/sql-change.sql /tmp/skeema-ci/dml_query_*.sql | tee /tmp/skeema-ci/all_sql_changes.sql
-        }
+        '''
         sh '''magic_comment_hint="-- skeema-diff-comment"
           magic_comment_id=$(/tmp/skeema-ci/hub api "/repos/rajkuntal/database-config/issues/17/comments?per_page=100" | jq -r ".[] | select(.body | startswith(\\"${magic_comment_hint}\\")) | .id" | head -n 1)
           if [ -z "$magic_comment_id" ] ; then
