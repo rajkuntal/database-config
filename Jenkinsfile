@@ -41,14 +41,13 @@ pipeline {
         sh '/tmp/skeema-ci/skeema diff skeema-diff-ci | tee /tmp/skeema-ci/skeema-diff.sql'
         sh '''
             if [ -s /tmp/skeema-ci/skeema-diff.sql ] ; then
-              echo '-- skeema-diff-comment' >> /tmp/skeema-ci/sql-change.sql
-              echo '' >> /tmp/skeema-ci/skeema-diff.sql
-              echo '```sql' >> /tmp/skeema-ci/sql-change.sql
-              sed -i 's/-- instance: localhost:3306//g' /tmp/skeema-ci/skeema-diff.sql
+              echo \'-- skeema-diff-comment\' >> /tmp/skeema-ci/sql-change.sql
+              echo \'\' >> /tmp/skeema-ci/skeema-diff.sql
+              echo \'```sql\' >> /tmp/skeema-ci/sql-change.sql
+              sed -i \'s/-- instance: localhost:3306//g\' /tmp/skeema-ci/skeema-diff.sql
               cat /tmp/skeema-ci/skeema-diff.sql >> /tmp/skeema-ci/sql-change.sql
             fi
           '''
-
         sh '(git fetch origin ${CHANGE_TARGET}:${CHANGE_TARGET}) && (git diff --name-only ${CHANGE_TARGET}) | tee /tmp/skeema-ci/dml-changes.txt'
         sh '''
             while IFS="" read -r p || [ -n "$p" ]
@@ -56,7 +55,7 @@ pipeline {
                 if [[ ("$p" == *"/resources/db/predeploy"*) || ("$p" == *"/resources/db/postdeploy"*) ]]; then
                   cp -v "$p" /tmp/skeema-ci/dml_query_$counter.sql
                   if [[ $counter == 2 ]]; then
-                    echo '' >> /tmp/skeema-ci/sql-change.sql
+                    echo \'\' >> /tmp/skeema-ci/sql-change.sql
                     echo -- dml queries >> /tmp/skeema-ci/sql-change.sql
                   fi
                 fi
