@@ -19,7 +19,6 @@ pipeline {
 
       }
       steps {
-        sh 'echo ${GIT_COMMIT}'
         sh 'apt-get update'
         sh 'apt-get -y install tar'
         sh 'apt-get -y install curl'
@@ -50,12 +49,11 @@ pipeline {
             fi
 
             (git fetch origin ${CHANGE_TARGET}:${CHANGE_TARGET}) && (git diff --name-only ${CHANGE_TARGET}) | tee /tmp/skeema-ci/dml-changes.txt
-            counter = 1;
             while IFS="" read -r p || [ -n "$p" ]
               do
                 if [[ ("$p" == *"/resources/db/predeploy"*) || ("$p" == *"/resources/db/postdeploy"*) ]]; then
                   cp -v "$p" /tmp/skeema-ci/dml_query_$counter.sql
-                  if [[ $counter == 1 ]]; then
+                  if [[ $counter == 2 ]]; then
                     echo '' >> /tmp/skeema-ci/sql-change.sql
                     echo -- dml queries >> /tmp/skeema-ci/sql-change.sql
                   fi
