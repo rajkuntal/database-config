@@ -30,6 +30,8 @@ pipeline {
           env.REPOSITORY_NAME = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
         }
 
+        echo "${env.REPOSITORY_NAME}"
+
         sh '''
           mkdir -p /tmp/skeema-ci/
           cd /tmp/skeema-ci/
