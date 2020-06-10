@@ -47,8 +47,10 @@ pipeline {
               sed -i 's/-- instance: localhost:3306//g' /tmp/skeema-ci/skeema-diff.sql
               cat /tmp/skeema-ci/skeema-diff.sql >> /tmp/skeema-ci/sql-change.sql
             fi
+          '''
 
-            (git fetch origin ${CHANGE_TARGET}:${CHANGE_TARGET}) && (git diff --name-only ${CHANGE_TARGET}) | tee /tmp/skeema-ci/dml-changes.txt
+        sh '(git fetch origin ${CHANGE_TARGET}:${CHANGE_TARGET}) && (git diff --name-only ${CHANGE_TARGET}) | tee /tmp/skeema-ci/dml-changes.txt'
+        sh '''
             while IFS="" read -r p || [ -n "$p" ]
               do
                 if [[ ("$p" == *"/resources/db/predeploy"*) || ("$p" == *"/resources/db/postdeploy"*) ]]; then
