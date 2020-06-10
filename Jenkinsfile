@@ -26,9 +26,11 @@ pipeline {
         sh 'service mysql restart'
         sh 'mysql -hlocalhost -uroot -proot -e "CREATE USER \'skeema\'@\'localhost\' IDENTIFIED BY \'skeemaPass\'; GRANT ALL PRIVILEGES ON *.* TO \'skeema\'@\'localhost\' WITH GRANT OPTION; CREATE USER \'skeema\'@\'%\' IDENTIFIED BY \'skeemaPass\'; GRANT ALL PRIVILEGES ON *.* TO \'skeema\'@\'%\' WITH GRANT OPTION;"'
         script {
-          sh("./scripts/db_changes.sh")
-        }
-
+          def repository = "git@" + env.GIT_URL.replaceFirst(".+://", "").replaceFirst("/", ":")
+          sshagent(credentials: ['github']) {
+            sh("git remote set-url origin ${repository}")
+            sh("./scripts/db_changes.sh")
+          }
         sleep(unit: 'SECONDS', time: 1)
       }
     }
