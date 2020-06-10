@@ -19,6 +19,7 @@ pipeline {
 
       }
       steps {
+        sh 'mkdir -p /tmp/code-workspace/'
         ws(dir: '/tmp/code-workspace/')
         sh 'apt-get update'
         sh 'apt-get -y install tar'
