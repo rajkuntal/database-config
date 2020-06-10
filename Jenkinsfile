@@ -72,23 +72,21 @@ pipeline {
                   cp -v "$filePath" /tmp/skeema-ci/dml_query_1.sql
                 fi
           done < /tmp/skeema-ci/dml-changes.txt
+          sh 'cp -v src/main/resources/db/predeploy/GROWTH_1234.sql /tmp/skeema-ci/dml_query_1.sql'
           cat /tmp/skeema-ci/sql-change.sql /tmp/skeema-ci/dml_query_*.sql | tee /tmp/skeema-ci/all_sql_changes.sql
         '''
 
-        sh 'cp -v src/main/resources/db/predeploy/GROWTH_1234.sql /tmp/skeema-ci/dml_query_1.sql'
-
         sh '''
 
-          echo "${env.REPOSITORY_NAME}"
+          echo ${env.REPOSITORY_NAME}
           magic_comment_hint="-- skeema-diff-comment"
-          repo_name = "${env.REPOSITORY_NAME}"
 
-          magic_comment_id=$(/tmp/skeema-ci/hub api "/repos/rajkuntal/"${repo_name}"/issues/${CHANGE_ID}/comments?per_page=100" | jq -r ".[] | select(.body | startswith(\\"${magic_comment_hint}\\")) | .id" | head -n 1)
+          magic_comment_id=$(/tmp/skeema-ci/hub api "/repos/rajkuntal/"${REPOSITORY_NAME}"/issues/${CHANGE_ID}/comments?per_page=100" | jq -r ".[] | select(.body | startswith(\\"${magic_comment_hint}\\")) | .id" | head -n 1)
 
           if [ -z "$magic_comment_id" ] ; then
-            /tmp/skeema-ci/hub api "/repos/rajkuntal/"${repo_name}"/issues/${CHANGE_ID}/comments" --raw-field "body=$(cat /tmp/skeema-ci/all_sql_changes.sql)"
+            /tmp/skeema-ci/hub api "/repos/rajkuntal/"${REPOSITORY_NAME}"/issues/${CHANGE_ID}/comments" --raw-field "body=$(cat /tmp/skeema-ci/all_sql_changes.sql)"
           else
-            /tmp/skeema-ci/hub api --method PATCH "/repos/rajkuntal/"${repo_name}"/issues/comments/${magic_comment_id}" --raw-field "body=$(cat /tmp/skeema-ci/all_sql_changes.sql)"
+            /tmp/skeema-ci/hub api --method PATCH "/repos/rajkuntal/"${REPOSITORY_NAME}"/issues/comments/${magic_comment_id}" --raw-field "body=$(cat /tmp/skeema-ci/all_sql_changes.sql)"
           fi
         '''
 
