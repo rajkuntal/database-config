@@ -25,9 +25,7 @@ pipeline {
         sh 'service mysql restart'
         sh 'mysql -hlocalhost -uroot -proot -e "CREATE USER \'skeema\'@\'localhost\' IDENTIFIED BY \'skeemaPass\'; GRANT ALL PRIVILEGES ON *.* TO \'skeema\'@\'localhost\' WITH GRANT OPTION; CREATE USER \'skeema\'@\'%\' IDENTIFIED BY \'skeemaPass\'; GRANT ALL PRIVILEGES ON *.* TO \'skeema\'@\'%\' WITH GRANT OPTION;"'
         sh 'mkdir -p /tmp/code-workspace/'
-        ws(dir: '/tmp/code-workspace/')
-        {
-          sh '''
+        sh '''
           mkdir -p /tmp/skeema-ci/
           cd /tmp/skeema-ci
           curl -s -L https://github.com/skeema/skeema/releases/download/v1.4.3/skeema_1.4.3_linux_amd64.tar.gz > skeema.tar.gz
@@ -71,7 +69,6 @@ pipeline {
             /tmp/skeema-ci/hub api --method PATCH "/repos/rajkuntal/database-config/issues/comments/${magic_comment_id}" --raw-field "body=$(cat /tmp/skeema-ci/all_sql_changes.sql)"
           fi
         '''
-        }
         sleep(unit: 'SECONDS', time: 1)
       }
     }
