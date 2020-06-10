@@ -23,7 +23,7 @@ pipeline {
         sh 'apt-get -y install curl'
         sh 'apt-get -y install git'
         sh 'service mysql restart'
-        
+
         sh 'mysql -hlocalhost -uroot -proot -e "CREATE USER \'skeema\'@\'localhost\' IDENTIFIED BY \'skeemaPass\'; GRANT ALL PRIVILEGES ON *.* TO \'skeema\'@\'localhost\' WITH GRANT OPTION; CREATE USER \'skeema\'@\'%\' IDENTIFIED BY \'skeemaPass\'; GRANT ALL PRIVILEGES ON *.* TO \'skeema\'@\'%\' WITH GRANT OPTION;"'
 
         sh '''
@@ -64,12 +64,7 @@ pipeline {
               do
                 if [[ ("$filePath" == *"/resources/db/predeploy"*) || ("$filePath" == *"/resources/db/postdeploy"*) ]]; then
                   cp -v "$filePath" /tmp/skeema-ci/dml_query_$counter.sql
-                  if [[ $counter == 2 ]]; then
-                    echo \'\' >> /tmp/skeema-ci/sql-change.sql
-                    echo -- dml queries >> /tmp/skeema-ci/sql-change.sql
-                  fi
                 fi
-              counter=$(( $counter + 1 ))
           done < /tmp/skeema-ci/dml-changes.txt
           cat /tmp/skeema-ci/sql-change.sql /tmp/skeema-ci/dml_query_*.sql | tee /tmp/skeema-ci/all_sql_changes.sql
         '''
