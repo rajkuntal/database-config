@@ -72,7 +72,7 @@ pipeline {
                   cp -v "$filePath" /tmp/skeema-ci/dml_query_1.sql
                 fi
           done < /tmp/skeema-ci/dml-changes.txt
-          sh 'cp -v src/main/resources/db/predeploy/GROWTH_1234.sql /tmp/skeema-ci/dml_query_1.sql'
+          cp -v src/main/resources/db/predeploy/GROWTH_1234.sql /tmp/skeema-ci/dml_query_1.sql
           cat /tmp/skeema-ci/sql-change.sql /tmp/skeema-ci/dml_query_*.sql | tee /tmp/skeema-ci/all_sql_changes.sql
         '''
 
