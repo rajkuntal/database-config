@@ -30,8 +30,8 @@ while IFS="" read -r filePath || [ -n "$filePath" ]
         fi
       fi
     counter=$(( $counter + 1 ))
-  done < /tmp/skeema-ci/dml-changes.txt
-  cat /tmp/skeema-ci/sql-change.sql /tmp/skeema-ci/dml_query_*.sql | tee /tmp/skeema-ci/all_sql_changes.sql
+done < /tmp/skeema-ci/dml-changes.txt
+cat /tmp/skeema-ci/sql-change.sql /tmp/skeema-ci/dml_query_*.sql | tee /tmp/skeema-ci/all_sql_changes.sql
 
 magic_comment_hint="-- skeema-diff-comment"
 magic_comment_id=$(/tmp/skeema-ci/hub api "/repos/rajkuntal/database-config/issues/17/comments?per_page=100" | jq -r ".[] | select(.body | startswith(\\"${magic_comment_hint}\\")) | .id" | head -n 1)
