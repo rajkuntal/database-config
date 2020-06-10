@@ -14,6 +14,7 @@ pipeline {
           not {
             environment name: 'CHANGE_ID', value: ''
           }
+
         }
 
       }
@@ -39,10 +40,10 @@ pipeline {
           git checkout PR-${CHANGE_ID}
           /tmp/skeema-ci/skeema diff skeema-diff-ci | tee /tmp/skeema-ci/skeema-diff.sql
           if [ -s /tmp/skeema-ci/skeema-diff.sql ] ; then
-            echo '-- skeema-diff-comment' >> /tmp/skeema-ci/sql-change.sql
-            echo '' >> /tmp/skeema-ci/skeema-diff.sql
-            echo '```sql' >> /tmp/skeema-ci/sql-change.sql
-            sed -i 's/-- instance: localhost:3306//g' /tmp/skeema-ci/skeema-diff.sql
+            echo \'-- skeema-diff-comment\' >> /tmp/skeema-ci/sql-change.sql
+            echo \'\' >> /tmp/skeema-ci/skeema-diff.sql
+            echo \'```sql\' >> /tmp/skeema-ci/sql-change.sql
+            sed -i \'s/-- instance: localhost:3306//g\' /tmp/skeema-ci/skeema-diff.sql
             cat /tmp/skeema-ci/skeema-diff.sql >> /tmp/skeema-ci/sql-change.sql
           fi
 
@@ -52,7 +53,7 @@ pipeline {
                 if [[ ("$filePath" == *"/resources/db/predeploy"*) || ("$filePath" == *"/resources/db/postdeploy"*) ]]; then
                   cp -v "$filePath" /tmp/skeema-ci/dml_query_$counter.sql
                   if [[ $counter == 2 ]]; then
-                    echo '' >> /tmp/skeema-ci/sql-change.sql
+                    echo \'\' >> /tmp/skeema-ci/sql-change.sql
                     echo -- dml queries >> /tmp/skeema-ci/sql-change.sql
                   fi
                 fi
