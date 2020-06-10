@@ -31,6 +31,7 @@ pipeline {
             sh("git remote set-url origin ${repository}")
             sh("./scripts/db_changes.sh")
           }
+        }
         sleep(unit: 'SECONDS', time: 1)
       }
     }
