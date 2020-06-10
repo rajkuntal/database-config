@@ -19,6 +19,7 @@ pipeline {
 
       }
       steps {
+        ws(dir: '/tmp/code-workspace/')
         sh 'apt-get update'
         sh 'apt-get -y install tar'
         sh 'apt-get -y install curl'
