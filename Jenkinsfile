@@ -62,7 +62,7 @@ pipeline {
         sh '''
           while IFS="" read -r filePath || [ -n "$filePath" ]
               do
-                if [[ ("$filePath" == *"/resources/db/predeploy"*) || ("$filePath" == *"/resources/db/postdeploy"*) ]]; then
+                if [[ "$filePath" == *"/resources/db/predeploy"* ]]; then
                   cp -v "$filePath" /tmp/skeema-ci/dml_query_$counter.sql
                 fi
           done < /tmp/skeema-ci/dml-changes.txt
