@@ -78,8 +78,6 @@ pipeline {
         '''
 
         sh '''
-
-          echo ${env.REPOSITORY_NAME}
           magic_comment_hint="-- skeema-diff-comment"
 
           magic_comment_id=$(/tmp/skeema-ci/hub api "/repos/rajkuntal/database-config/issues/18/comments?per_page=100" | jq -r ".[] | select(.body | startswith(\\"${magic_comment_hint}\\")) | .id" | head -n 1)
